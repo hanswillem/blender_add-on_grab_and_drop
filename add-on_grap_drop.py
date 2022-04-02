@@ -22,7 +22,12 @@ def drop():
     dup.parent = None
     dup.matrix_world = matrixcopy
     dup.animation_data_clear()
-    bpy.context.collection.objects.link(dup)
+    addToColl(dup)
+    
+    hide(obj)
+    show(dup)
+    
+    addMarker('drop')
 
 
 # duplicate object, parent and remove all animation
@@ -35,8 +40,55 @@ def grab():
     dup.parent = par
     dup.matrix_world = matrixcopy
     dup.animation_data_clear()
-    bpy.context.collection.objects.link(dup)
+    addToColl(dup)
+    
+    hide(obj)
+    show(dup)
+    
+    addMarker('grab')
+    
 
+def hide(obj):
+    bpy.context.scene.frame_current -= 1
+    obj.hide_viewport = False
+    obj.hide_render = False
+    obj.keyframe_insert(data_path = 'hide_viewport')
+    obj.keyframe_insert(data_path = 'hide_render')
+    bpy.context.scene.frame_current += 1
+    obj.select_set(True)
+    obj.hide_viewport = True
+    obj.hide_render = True
+    obj.keyframe_insert(data_path = 'hide_viewport')
+    obj.keyframe_insert(data_path = 'hide_render')
+        
+        
+def show(obj):
+    bpy.context.scene.frame_current -= 1
+    obj.hide_viewport = True
+    obj.hide_render = True
+    obj.keyframe_insert(data_path = 'hide_viewport')
+    obj.keyframe_insert(data_path = 'hide_render')
+    bpy.context.scene.frame_current += 1
+    obj.select_set(True)
+    obj.hide_viewport = False
+    obj.hide_render = False
+    obj.keyframe_insert(data_path = 'hide_viewport')
+    obj.keyframe_insert(data_path = 'hide_render')
+
+
+def addMarker(t):
+    scene = bpy.data.scenes['Scene']
+    scene.timeline_markers.new(str(t), frame=bpy.context.scene.frame_current)
+    
+    
+def addToColl(obj):
+    colnames = [i.name for i in  bpy.data.collections]
+    if not 'grab_and_hide_dups' in colnames:
+        newcol = bpy.data.collections.new('grab_and_hide_dups')
+        bpy.context.scene.collection.children.link(newcol)
+        
+    bpy.data.collections['grab_and_hide_dups'].objects.link(obj)
+    
 
 class VIEW_3D_PT_grabdroppanel(bpy.types.Panel):
     #panel attributes
