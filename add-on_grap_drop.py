@@ -22,7 +22,7 @@ bl_info = {
     'author' : 'Hans Willem Gijzel',
     'version' : (1, 0),
     'blender' : (3, 1, 2  ),
-    'location' : 'View 3D > Tools > My Addon',
+    'location' : 'View 3D > Tools > Grab & Drop',
     'description' : 'Grabs & drops objects',
     'warning' : '',
     'wiki_url' : '',
@@ -33,26 +33,9 @@ bl_info = {
 #imports
 import bpy
 
-# duplicate object, unparent and remove all animation
-def drop():
-    obj = bpy.context.active_object
-    matrixcopy = obj.matrix_world.copy()
-    dup = obj.copy()
-    if dup.parent.type == 'ARMATURE':
-        dup.parent_bone = ''
-    dup.parent = None
-
-    dup.matrix_world = matrixcopy
-    dup.animation_data_clear()
-    addToColl(dup)
-    
-    hide(obj)
-    show(dup)
-    
-    addMarker('drop')
-
 
 # duplicate object, parent and remove all animation
+# when the par is an armature and there is a bone selected in pose mode, it will parent to that bone
 def grab():
     # the next line is needed because selected_objects doesn't return a list that is ordered in the selection order
     obj = [i for i in bpy.context.selected_objects if i is not bpy.context.active_object][0]
@@ -68,13 +51,32 @@ def grab():
         
     dup.matrix_world = matrixcopy
     dup.animation_data_clear()
-    addToColl(dup)
+    bpy.context.scene.collection.objects.link(dup)
+    
+    hide(obj)
+    show(dup)
+
+    addMarker('grab')
+    
+    
+# duplicate object, unparent and remove all animation
+def drop():
+    obj = bpy.context.active_object
+    matrixcopy = obj.matrix_world.copy()
+    dup = obj.copy()
+    if dup.parent.type == 'ARMATURE':
+        dup.parent_bone = ''
+    dup.parent = None
+
+    dup.matrix_world = matrixcopy
+    dup.animation_data_clear()
+    bpy.context.scene.collection.objects.link(dup)
     
     hide(obj)
     show(dup)
     
-    addMarker('grab')
-    
+    addMarker('drop')
+
 
 def hide(obj):
     bpy.context.scene.frame_current -= 1
@@ -105,18 +107,9 @@ def show(obj):
 
 
 def addMarker(t):
-    scene = bpy.data.scenes['Scene']
+    scene = bpy.context.scene
     scene.timeline_markers.new(str(t), frame=bpy.context.scene.frame_current)
     
-    
-def addToColl(obj):
-    colnames = [i.name for i in  bpy.data.collections]
-    if not 'grab_and_hide_dups' in colnames:
-        newcol = bpy.data.collections.new('grab_and_hide_dups')
-        bpy.context.scene.collection.children.link(newcol)
-        
-    bpy.data.collections['grab_and_hide_dups'].objects.link(obj)
-
 
 class VIEW_3D_PT_grabanddrop(bpy.types.Panel):
     #panel attributes
