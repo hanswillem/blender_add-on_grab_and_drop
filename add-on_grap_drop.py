@@ -19,7 +19,6 @@ def drop():
     obj = bpy.context.active_object
     matrixcopy = obj.matrix_world.copy()
     dup = obj.copy()
-    
     if dup.parent.type == 'ARMATURE':
         dup.parent_bone = ''
     dup.parent = None
@@ -101,7 +100,7 @@ def addToColl(obj):
 
  
 
-class VIEW_3D_PT_grabdroppanel(bpy.types.Panel):
+class VIEW_3D_PT_grabanddrop(bpy.types.Panel):
     #panel attributes
     """Grab & drop objects"""
     bl_label = 'Grab & Drop'
@@ -153,7 +152,7 @@ class SCRIPT_OT_dropoperator(bpy.types.Operator):
      
 #registration
 classes = (
-    VIEW_3D_PT_grabdroppanel,
+    VIEW_3D_PT_grabanddrop,
     SCRIPT_OT_graboperator,
     SCRIPT_OT_dropoperator
 )
