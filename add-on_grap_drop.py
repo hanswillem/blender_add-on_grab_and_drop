@@ -19,7 +19,11 @@ def drop():
     obj = bpy.context.active_object
     matrixcopy = obj.matrix_world.copy()
     dup = obj.copy()
+    
+    if dup.parent.type == 'ARMATURE':
+        dup.parent_bone = ''
     dup.parent = None
+
     dup.matrix_world = matrixcopy
     dup.animation_data_clear()
     addToColl(dup)
@@ -38,6 +42,12 @@ def grab():
     dup = obj.copy()
     matrixcopy = obj.matrix_world.copy()
     dup.parent = par
+    
+    if par.type == 'ARMATURE':
+        if bpy.context.selected_pose_bones:
+            dup.parent_bone = bpy.context.selected_pose_bones[-1].name
+            dup.parent_type = 'BONE'
+        
     dup.matrix_world = matrixcopy
     dup.animation_data_clear()
     addToColl(dup)
@@ -88,7 +98,8 @@ def addToColl(obj):
         bpy.context.scene.collection.children.link(newcol)
         
     bpy.data.collections['grab_and_hide_dups'].objects.link(obj)
-    
+
+ 
 
 class VIEW_3D_PT_grabdroppanel(bpy.types.Panel):
     #panel attributes
@@ -132,7 +143,7 @@ class SCRIPT_OT_dropoperator(bpy.types.Operator):
     #poll - if the poll function returns False, the button will be greyed out
     @classmethod
     def poll(cls, context):
-        return len(bpy.context.selected_objects) == 1
+        return len(bpy.context.selected_objects) == 1 and bpy.context.active_object.parent is not None
     
     #execute
     def execute(self, context):
