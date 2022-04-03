@@ -51,7 +51,8 @@ def grab():
         
     dup.matrix_world = matrixcopy
     dup.animation_data_clear()
-    bpy.context.scene.collection.objects.link(dup)
+    coll = bpy.context.active_object.users_collection[0] 
+    coll.objects.link(dup)
     
     hide(obj)
     show(dup)
@@ -70,7 +71,8 @@ def drop():
 
     dup.matrix_world = matrixcopy
     dup.animation_data_clear()
-    bpy.context.scene.collection.objects.link(dup)
+    coll = bpy.context.active_object.users_collection[0] 
+    coll.objects.link(dup)
     
     hide(obj)
     show(dup)
