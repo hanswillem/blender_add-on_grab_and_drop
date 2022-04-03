@@ -98,7 +98,6 @@ def addToColl(obj):
         
     bpy.data.collections['grab_and_hide_dups'].objects.link(obj)
 
- 
 
 class VIEW_3D_PT_grabanddrop(bpy.types.Panel):
     #panel attributes
