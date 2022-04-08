@@ -1,1 +1,1 @@
-# blender_add-on_grab_and_drop
+# blender add-on Grab & Drop
