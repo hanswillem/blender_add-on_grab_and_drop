@@ -125,8 +125,8 @@ class VIEW_3D_PT_grabanddrop(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         col = layout.column(align = True)
-        col.operator('script.graboperator', text='Grab')
-        col.operator('script.dropoperator', text='Drop')
+        col.operator('script.graboperator', text='Grab', icon='LINK_BLEND')
+        col.operator('script.dropoperator', text='Drop', icon='SORT_ASC')
 
         
 class SCRIPT_OT_graboperator(bpy.types.Operator):
